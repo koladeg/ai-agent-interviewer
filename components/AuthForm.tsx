@@ -45,8 +45,9 @@ export default function AuthForm({type}: {type: FormType}) {
             router.push('/sign-in')
             console.log('SIGN UP', values); 
         }else{
-            console.log('SIGN IN', values);
-        
+          toast.success("sign in successful")
+          console.log('SIGN IN', values);
+          router.push('/')
         }
     } catch (error) {
         console.log(error);
