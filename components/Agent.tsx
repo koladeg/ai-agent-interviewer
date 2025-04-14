@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { vapi } from '@/lib/vapi.sdk';
+import { interviewer } from '@/constants';
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -31,9 +32,9 @@ const Agent = ({
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  // const [lastMessage, setLastMessage] = useState<string>("");
+  const [lastMessage, setLastMessage] = useState<string>("");
 
-  const lastMessage = messages[messages.length - 1]
+  // const lastMessage = messages[messages.length - 1]
 
   useEffect(() => {
     const onCallStart = () => {
@@ -83,33 +84,38 @@ const Agent = ({
   }, []);
 
   useEffect(() => {
-    // if (messages.length > 0) {
-    //   setLastMessage(messages[messages.length - 1].content);
-    // }
+    if (messages.length > 0) {
+      setLastMessage(messages[messages.length - 1].content);
+    }
 
-    // const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-    //   console.log("handleGenerateFeedback");
+    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+      console.log("handleGenerateFeedback");
 
-    //   const { success, feedbackId: id } = await createFeedback({
-    //     interviewId: interviewId!,
-    //     userId: userId!,
-    //     transcript: messages,
-    //     feedbackId,
-    //   });
+      // const { success, feedbackId: id } = await createFeedback({
+      //   interviewId: interviewId!,
+      //   userId: userId!,
+      //   transcript: messages,
+      //   feedbackId,
+      // });
 
-    //   if (success && id) {
-    //     router.push(`/interview/${interviewId}/feedback`);
-    //   } else {
-    //     console.log("Error saving feedback");
-    //     router.push("/");
-    //   }
-    // };
+      const { success, id } = {
+        success: true,
+        id: 'feedback-id'
+      };
+
+      if (success && id) {
+        router.push(`/interview/${interviewId}/feedback`);
+      } else {
+        console.log("Error saving feedback");
+        router.push("/");
+      }
+    };
 
     if (callStatus === CallStatus.FINISHED) {
       if (type === "generate") {
         router.push("/");
       } else {
-        // handleGenerateFeedback(messages);
+        handleGenerateFeedback(messages);
       }
     }
   }, [messages, callStatus, feedbackId, interviewId, router, type, userId]);
@@ -117,34 +123,27 @@ const Agent = ({
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
 
-    await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
-      variableValues: {
-        username: userName,
-        userid: userId,
-      },
-    });
+    if (type === "generate") {
+      await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
+        variableValues: {
+          username: userName,
+          userid: userId,
+        },
+      });
+    } else {
+      let formattedQuestions = "";
+      if (questions) {
+        formattedQuestions = questions
+          .map((question) => `- ${question}`)
+          .join("\n");
+      }
 
-    // if (type === "generate") {
-    //   await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
-    //     variableValues: {
-    //       username: userName,
-    //       userid: userId,
-    //     },
-    //   });
-    // } else {
-    //   let formattedQuestions = "";
-    //   if (questions) {
-    //     formattedQuestions = questions
-    //       .map((question) => `- ${question}`)
-    //       .join("\n");
-    //   }
-
-    //   await vapi.start(interviewer, {
-    //     variableValues: {
-    //       questions: formattedQuestions,
-    //     },
-    //   });
-    // }
+      await vapi.start(interviewer, {
+        variableValues: {
+          questions: formattedQuestions,
+        },
+      });
+    }
   };
 
   const handleDisconnect = () => {
@@ -189,7 +188,7 @@ const Agent = ({
         </div>
       </div>
 
-      {/* {messages.length > 0 && (
+      {messages.length > 0 && (
         <div className="transcript-border">
           <div className="transcript">
             <p
@@ -203,7 +202,7 @@ const Agent = ({
             </p>
           </div>
         </div>
-      )} */}
+      )}
 
       <div className="w-full flex justify-center">
         {callStatus !== "ACTIVE" ? (
