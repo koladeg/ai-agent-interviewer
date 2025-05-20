@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { vapi } from '@/lib/vapi.sdk';
 import { interviewer } from '@/constants';
+import { createFeedback } from '@/lib/actions/general.action';
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -25,7 +26,7 @@ const Agent = ({
   interviewId,
   feedbackId,
   type,
-  questions,
+  questions, profileImage
 }: AgentProps) => {
 
   const router = useRouter();
@@ -34,7 +35,6 @@ const Agent = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [lastMessage, setLastMessage] = useState<string>("");
 
-  // const lastMessage = messages[messages.length - 1]
 
   useEffect(() => {
     const onCallStart = () => {
@@ -91,17 +91,12 @@ const Agent = ({
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
       console.log("handleGenerateFeedback");
 
-      // const { success, feedbackId: id } = await createFeedback({
-      //   interviewId: interviewId!,
-      //   userId: userId!,
-      //   transcript: messages,
-      //   feedbackId,
-      // });
-
-      const { success, id } = {
-        success: true,
-        id: 'feedback-id'
-      };
+      const { success, feedbackId: id } = await createFeedback({
+        interviewId: interviewId!,
+        userId: userId!,
+        transcript: messages,
+        feedbackId,
+      });
 
       if (success && id) {
         router.push(`/interview/${interviewId}/feedback`);
@@ -151,9 +146,6 @@ const Agent = ({
     vapi.stop();
   };
 
-  const latestMessage = messages[messages.length - 1]?.content;
-
-  const isCallInactiveorFinsihed = callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED 
 
   return (
     <>
@@ -170,14 +162,14 @@ const Agent = ({
             />
             {isSpeaking && <span className="animate-speak" />}
           </div>
-          <h3>AI Interviewer</h3>
+          <h3>AI Support</h3>
         </div>
 
         {/* User Profile Card */}
         <div className="card-border">
           <div className="card-content">
             <Image
-              src="/user-avatar.png"
+              src={profileImage ? profileImage : "/user-avatar.png" }
               alt="profile-image"
               width={539}
               height={539}
@@ -192,7 +184,7 @@ const Agent = ({
         <div className="transcript-border">
           <div className="transcript">
             <p
-              key={latestMessage}
+              key={lastMessage}
               className={cn(
                 "transition-opacity duration-500 opacity-0",
                 "animate-fadeIn opacity-100"
@@ -215,7 +207,7 @@ const Agent = ({
             />
 
             <span className="relative">
-              {isCallInactiveorFinsihed
+            {callStatus === "INACTIVE" || callStatus === "FINISHED"
                 ? "Call"
                 : ". . ."}
             </span>

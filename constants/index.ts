@@ -108,7 +108,7 @@ export const interviewer: CreateAssistantDTO = {
   },
   voice: {
     provider: "11labs",
-    voiceId: "sarah",
+    voiceId: "8B4Pfz8BwZh0sAFOespj",
     stability: 0.4,
     similarityBoost: 0.8,
     speed: 0.9,
@@ -147,7 +147,7 @@ Inform them that the company will reach out soon with feedback.
 End the conversation on a polite and positive note.
 
 
-- Be sure to be professional and polite.
+- Be sure to be professional, polite and make sure to give time for responses that require some reasoning.
 - Keep all your responses short and simple. Use official language, but be kind and welcoming.
 - This is a voice conversation, so keep your responses short, like in a real conversation. Don't ramble for too long.`,
       },

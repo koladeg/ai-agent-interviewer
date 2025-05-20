@@ -93,7 +93,7 @@ export default function AuthForm({type}: {type: FormType}) {
             <div className="flex flex-row gap-2 justify-center">
                 <Image src='logo.svg' alt="logo" height={32} width={38} />
             </div>
-            <h3>Practice for role interviews with AI </h3>
+            <h3>Make your reports with AI </h3>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 mt-4 form">
               {!isSignIn && <FormField 

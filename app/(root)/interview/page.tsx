@@ -9,9 +9,10 @@ export default async function page() {
   return (
     <>
       <h3> Interview generation </h3>
-      <Agent userName={user?.name!}
+      <Agent 
+        userName={user?.name!}
         userId={user?.id}
-        // profileImage={user?.profileURL}
+        profileImage={user?.profileURL}
         type="generate" />
     </>
   )

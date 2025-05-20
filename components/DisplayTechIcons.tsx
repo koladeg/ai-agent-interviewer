@@ -5,7 +5,7 @@ import { cn, getTechLogos } from "@/lib/utils";
 const DisplayTechIcons = async ({ techStack }: TechIconProps) => {
   const techIcons = await getTechLogos(techStack);
 
-  console.log("tech",techIcons);
+  // console.log("tech",techIcons);
   
 
   return (
