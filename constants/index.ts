@@ -155,6 +155,72 @@ End the conversation on a polite and positive note.
   },
 };
 
+export const assistant: CreateAssistantDTO = {
+  name: "ReportGenAssistant",
+
+  // Initial greeting when the call starts
+  firstMessage:
+      "Hello, I’ll walk you through a few quick questions to prepare your report. " +
+      "Feel free to speak naturally, and I’ll handle the rest. Shall we begin?",
+
+  // Audio-to-text settings
+  transcriber: {
+    provider: "deepgram",
+    model: "nova-2",
+    language: "en",
+  },
+
+  // Text-to-speech settings
+  voice: {
+    provider: "11labs",
+    voiceId: "amy",          // warm, professional female voice
+    stability: 0.5,
+    similarityBoost: 0.7,
+    speed: 1.0,
+    style: 0.6,
+    useSpeakerBoost: true,
+  },
+
+  // LLM configuration
+  model: {
+    provider: "openai",
+    model: "gpt-4",
+    messages: [
+      {
+        role: "system",
+        content: `
+You are ReportGenAssistant, a professional voice assistant guiding Lagos nigeria based users through a concise interview to collect all key details for their report.
+
+ **Question Flow**  
+Iterate through the array {{questions}}, asking one question at a time.  
+• After each answer, say something like “Thank you” or “Got it.”  
+• If a response is very brief or unclear, gently reprompt once:  
+  “I’m sorry, could you say a bit more on that?”  
+• Then move on even if they remain brief.
+
+️**Answer Collection**  
+Collect each response and build a JSON array of objects:  
+[
+  { "question": "...", "answer": "..." },
+  …
+]
+
+**Tone and Style**  
+• Use clear, professional English with a friendly tone.  
+• No slang or heavy local expressions—just polite and natural.  
+• Keep each prompt under 15 words for smooth voice flow.  
+• Avoid characters like “/” or “*” that could break TTS.
+
+4️⃣ **On Completion**  
+When all questions are done:  
+• Say:  
+  “Great, I’ve captured all your inputs. Please hold on while we generate your report.”  
+• Finally, output only the JSON array—no extra narration—so our backend can process it.`.trim()
+      }
+    ]
+  }
+};
+
 export const feedbackSchema = z.object({
   totalScore: z.number(),
   categoryScores: z.tuple([

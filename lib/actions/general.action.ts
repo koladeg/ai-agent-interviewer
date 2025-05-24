@@ -123,3 +123,18 @@ export async function getInterviewsByUserId(
     ...doc.data(),
   })) as Interview[];
 }
+
+export async function getReportsByUserId(
+    userId: string
+): Promise<Report[] | null> {
+  const reports = await db
+      .collection("reports")
+      .where("userId", "==", userId)
+      .orderBy("createdAt", "desc")
+      .get();
+
+  return reports.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as Report[];
+}

@@ -47,6 +47,15 @@ interface InterviewCardProps {
   createdAt?: string;
 }
 
+interface ReportCardProps {
+  interviewId?: string;
+  userId?: string;
+  report_type: string;
+  report_purpose: string;
+  // techstack: string[];
+  createdAt?: string;
+}
+
 interface AgentProps {
   userName: string;
   userId?: string;
