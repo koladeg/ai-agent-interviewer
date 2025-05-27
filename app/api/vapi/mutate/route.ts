@@ -5,38 +5,40 @@ import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
 
 export async function POST(request: Request) {
-    const { report_type, report_purpose, timeframe, key_metrics, urgency, extra_notes, userid } = await request.json();
+    const {
+        report_type,
+        report_purpose,
+        timeframe,
+        key_metrics,
+        urgency,
+        extra_notes,
+        userid
+    } = await request.json();
 
     try {
         const { text: questions } = await generateText({
             model: google("gemini-2.0-flash-001"),
             prompt: `You are building a structured interview to gather all information needed for a report.
-              
-              1. ${report_type} - the kind of report, you are an expert in making this kind of report
-              2. ${report_purpose} - is what the report is for 
-              3. ${timeframe} - is the period the report covers like (e.g., Q1 2025, March 1–15, etc.)
-              4. ${key_metrics} - are the key metrics, sections, or details that should be included in the report
-              5. ${urgency} - is how soon the user needs the report (e.g., today, this week, etc.)
-              6. ${extra_notes} - Are extra information the user wants to include for the report.
-              
-              Please generate **natural, user-friendly questions** to collect each of these parameters. 
-              
-              ### Requirements:
-              1. The questions should be concise and conversational.
-              2. Avoid technical jargon; make the questions easy to understand for a wide audience.
-              3. Format the output as an array of questions.
-              4. The response format should look like this:
-                 \`\`\`json
-                 [
-                   "Question 1",
-                   "Question 2",
-                   "Question 3",
-                   "Question 4",
-                   "Question 5",
-                   "Question 6"
-                 ]
-        
 
+            Type: ${report_type}
+            Purpose: ${report_purpose}
+            Timeframe: ${timeframe}
+            Key Metrics/Sections: ${key_metrics}
+            Urgency: ${urgency}
+            Additional Notes: ${extra_notes}
+            
+            Goals:
+            1. Cover every section or metric listed under Key Metrics/Sections with at least one dedicated question.
+            2. Drill into any dates, figures, or names mentioned—e.g., “Could you specify the exact budget figures for X?”
+            3. Surface any missing context needed for a professional report (stakeholders, assumptions, risks).
+            
+            Generate 5–9 clear, concise questions that the voice assistant can ask to flesh out each section.  
+            • Return only a JSON array of questions.  
+            • Each question should be short and simple enough for most Nigerian educated adults to understand.   
+            • No special characters that could break speech (no “/”, “*”, etc.).  
+            Example response:
+            ["Can you summarize the budget vs actual figures for Q1 2025?", …]
+        
     `,
         });
 
@@ -47,12 +49,14 @@ export async function POST(request: Request) {
             key_metrics: key_metrics,
             urgency: urgency,
             extra_notes: extra_notes,
-            questions: JSON.parse(questions),
+            questions: questions,
             userId: userid,
             finalized: true,
             coverImage: getRandomInterviewCover(),
             createdAt: new Date().toISOString(),
         };
+
+        console.log("report", report)
 
         await db.collection("reports").add(report);
 
