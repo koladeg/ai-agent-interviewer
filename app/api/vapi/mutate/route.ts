@@ -32,13 +32,12 @@ export async function POST(request: Request) {
             2. Drill into any dates, figures, or names mentioned—e.g., “Could you specify the exact budget figures for X?”
             3. Surface any missing context needed for a professional report (stakeholders, assumptions, risks).
             
-            Generate 5–9 clear, concise questions that the voice assistant can ask to flesh out each section.  
-            • Return only a JSON array of questions.  
-            • Each question should be short and simple enough for most Nigerian educated adults to understand.   
-            • No special characters that could break speech (no “/”, “*”, etc.).  
-            Example response:
-            ["Can you summarize the budget vs actual figures for Q1 2025?", …]
-        
+            Generate concise questions to collect the necessary details for this report. Format the questions as an array:
+            ["Question 1", "Question 2", "Question 3"].
+
+            The questions will be used by a voice assistant that will be talking primarily to an educated lagos nigerian based audience, 
+            so avoid special characters or formatting that might break the flow and align question more to that audience .
+                    
     `,
         });
 
