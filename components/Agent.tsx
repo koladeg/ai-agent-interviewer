@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { vapi } from '@/lib/vapi.sdk';
-import { interviewer } from '@/constants';
+import { assistant, interviewer } from '@/constants';
 import { createFeedback } from '@/lib/actions/general.action';
 
 enum CallStatus {
@@ -133,7 +133,7 @@ const Agent = ({
           .join("\n");
       }
 
-      await vapi.start(interviewer, {
+      await vapi.start(assistant, {
         variableValues: {
           questions: formattedQuestions,
         },

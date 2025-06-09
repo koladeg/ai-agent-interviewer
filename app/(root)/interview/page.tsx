@@ -6,6 +6,9 @@ export default async function page() {
 
   const user = await getCurrentUser();
 
+  console.log("user: ", user);
+  
+
   return (
     <>
       <h3> Interview generation </h3>

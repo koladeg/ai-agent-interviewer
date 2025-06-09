@@ -173,7 +173,7 @@ export const assistant: CreateAssistantDTO = {
   // Text-to-speech settings
   voice: {
     provider: "11labs",
-    voiceId: "amy",          // warm, professional female voice
+    voiceId: "cVfw9PD2QL7pPiHl86gf",          // warm, professional female voice
     stability: 0.5,
     similarityBoost: 0.7,
     speed: 1.0,
@@ -206,8 +206,8 @@ Collect each response and build a JSON array of objects:
 ]
 
 **Tone and Style**  
-• Use clear, professional English with a friendly tone.  
-• No slang or heavy local expressions—just polite and natural.  
+• Use clear, professional English with a friendly tone that most educated nigerians will understand.  
+• No slang or heavy local expressions—more polite and natural.  
 • Keep each prompt under 15 words for smooth voice flow.  
 • Avoid characters like “/” or “*” that could break TTS.
 

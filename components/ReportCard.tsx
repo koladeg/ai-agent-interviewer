@@ -62,7 +62,7 @@ const ReportCard = async ({
                     />
 
                     {/* Interview Role */}
-                    <h3 className="mt-5 capitalize">{report_type} Interview</h3>
+                    <h3 className="mt-5 capitalize">{report_type}</h3>
 
                     {/* Date & Score */}
                     <div className="flex flex-row gap-5 mt-3">
@@ -85,7 +85,7 @@ const ReportCard = async ({
                     {/* Feedback or Placeholder Text */}
                     <p className="line-clamp-2 mt-5">
                         {feedback?.finalAssessment ||
-                            "You haven't taken this interview yet. Take it now to improve your skills."}
+                            "You haven't taken this report yet. Take it now to see if its for you."}
                     </p>
                 </div>
 

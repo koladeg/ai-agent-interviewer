@@ -1,7 +1,7 @@
 import InterviewCard from '@/components/InterviewCard'
 import { Button } from '@/components/ui/button'
 import { getCurrentUser } from '@/lib/actions/auth.action'
-import {getInterviewsByUserId, getLatestInterviews, getReportsByUserId} from '@/lib/actions/general.action'
+import {getInterviewsByUserId, getLatestInterviews, getLatestReports, getReportsByUserId} from '@/lib/actions/general.action'
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,14 +10,16 @@ import ReportCard from "@/components/ReportCard";
 
 export default async function page() {
   const user = await getCurrentUser();
-  const [userInterviews, latestInterviews, userReports] = await Promise.all([
+  const [userInterviews, latestInterviews, latestReports, userReports] = await Promise.all([
     getInterviewsByUserId(user?.id!),
     getLatestInterviews({ userId: user?.id! }),
-      getReportsByUserId(user?.id!)
+    getLatestReports({ userId: user?.id! }),
+    getReportsByUserId(user?.id!)
   ]);
 
   const hasPastInterviews = userInterviews?.length > 0;
   const hasUpcomingInterviews = latestInterviews?.length! > 0;
+  const hasUpcomingReports = latestReports?.length! > 0;
   const hasPastReports = userReports?.length > 0;
 
   return (
@@ -56,15 +58,15 @@ export default async function page() {
         <h2>Your Reports</h2>
         <div className='interviews-section'>
           {hasPastReports ? (
-              userReports?.map((interview) => (
+              userReports?.map((report) => (
                   <ReportCard
-                      key={interview.id}
+                      key={report.id}
                       userId={user?.id}
-                      report_type={interview.report_type}
-                      report_purpose={interview.report_purpose}
-                      // type={interview.type}
-                      interviewId={interview.id}
-                      createdAt={interview.createdAt}
+                      report_type={report.report_type}
+                      report_purpose={report.report_purpose}
+                      // type={report.type}
+                      interviewId={report.id}
+                      createdAt={report.createdAt}
                   />
               ))) : (
               <p>You haven&apos;t made any reports yet</p>
@@ -73,7 +75,7 @@ export default async function page() {
       </div>
     </section>
     <section className='flex flex-col gap-6 mt-8'>
-      <h2>Take an Interview</h2>
+      {/* <h2>Take an Interview</h2>
 
       <div className='interviews-section'>
       {hasUpcomingInterviews ? (
@@ -90,6 +92,25 @@ export default async function page() {
               />
             ))) : (
               <p>There are no interviews available</p>
+            )}
+      </div> */}
+      <h2>Make a Report</h2>
+
+      <div className='interviews-section'>
+      {hasUpcomingReports ? (
+            latestReports
+            ?.map((report) => (
+              <ReportCard
+                  key={report.id}
+                  userId={user?.id}
+                  report_type={report.report_type}
+                  report_purpose={report.report_purpose}
+                  // type={report.type}
+                  interviewId={report.id}
+                  createdAt={report.createdAt}
+              />
+          ))) : (
+              <p>There are no reports available</p>
             )}
       </div>
     </section>

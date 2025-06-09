@@ -25,6 +25,20 @@ interface Interview {
   finalized: boolean;
 }
 
+interface Report {
+  id: string;
+  report_type: string;
+  report_purpose: string;
+  questions: string[];
+  timeframe: string;
+  urgency: string;
+  createdAt: string;
+  userId: string;
+  key_metrics: string;
+  extra_notes: string;
+  finalized: boolean;
+}
+
 interface CreateFeedbackParams {
   interviewId: string;
   userId: string;
@@ -77,6 +91,11 @@ interface GetFeedbackByInterviewIdParams {
 }
 
 interface GetLatestInterviewsParams {
+  userId: string;
+  limit?: number;
+}
+
+interface GetLatestReportsParams {
   userId: string;
   limit?: number;
 }
