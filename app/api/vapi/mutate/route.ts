@@ -12,6 +12,7 @@ export async function POST(request: Request) {
         key_metrics,
         urgency,
         extra_notes,
+        specific_questions,
         userid
     } = await request.json();
 
@@ -23,6 +24,7 @@ export async function POST(request: Request) {
             Type: ${report_type}
             Purpose: ${report_purpose}
             Timeframe: ${timeframe}
+            questions to be added to the report: ${specific_questions}
             Key Metrics/Sections: ${key_metrics}
             Urgency: ${urgency}
             Additional Notes: ${extra_notes}
@@ -47,8 +49,9 @@ export async function POST(request: Request) {
             report_type: report_type,
             report_purpose: report_purpose,
             timeframe: timeframe,
-            key_metrics: key_metrics,
+            key_metrics: key_metrics.split(","),
             urgency: urgency,
+            specific_questions: specific_questions.split(","),
             extra_notes: extra_notes,
             questions: JSON.parse(questions),
             userId: userid,
