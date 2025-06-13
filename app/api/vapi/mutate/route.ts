@@ -53,7 +53,7 @@ export async function POST(request: Request) {
             urgency: urgency,
             specific_questions: specific_questions,
             extra_notes: extra_notes,
-            questions: questions,
+            questions: JSON.parse(questions),
             userId: userid,
             finalized: true,
             coverImage: getRandomInterviewCover(),
