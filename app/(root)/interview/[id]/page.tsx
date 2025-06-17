@@ -8,6 +8,7 @@ import {
   getFeedbackByInterviewId,
   getInterviewById,
   getReportById,
+  getReportFeedbackByInterviewId,
 } from "@/lib/actions/general.action";
 import { getCurrentUser } from "@/lib/actions/auth.action";
 import DisplayTechIcons from "@/components/DisplayTechIcons";
@@ -23,7 +24,12 @@ const InterviewDetails = async ({ params }: RouteParams) => {
   const report = await getReportById(id);
   if (!report) redirect("/");
 
-  const feedback = await getFeedbackByInterviewId({
+  // const feedback = await getFeedbackByInterviewId({
+  //   interviewId: id,
+  //   userId: user?.id!,
+  // });
+
+  const reportFeedback = await getReportFeedbackByInterviewId({
     interviewId: id,
     userId: user?.id!,
   });
@@ -56,9 +62,13 @@ const InterviewDetails = async ({ params }: RouteParams) => {
         profileImage={user?.profileURL}
         userId={user?.id}
         interviewId={id}
+        report_purpose={report.report_purpose}
+        report_type={report.report_type}
+        timeframe={report.timeframe}
         type="interview"
         questions={report.questions}
-        feedbackId={feedback?.id}
+        // feedbackId={feedback?.id}
+        reportFeedbackId={reportFeedback?.id}
       />
     </>
   );

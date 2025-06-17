@@ -34,7 +34,7 @@ export async function POST(request: Request) {
             2. Drill into any dates, figures, or names mentioned—e.g., “Could you specify the exact budget figures for X?”
             3. Surface any missing context needed for a professional report (stakeholders, assumptions, risks).
             
-            Generate concise questions no more than 15 to collect the necessary details for this report. Please return only the questions, without any additional text.
+            Generate concise questions no more than 10 to collect the necessary details for this report. Please return only the questions, without any additional text.
             The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant. Return the questions formatted like this:
             ["Question 1", "Question 2", "Question 3"].
         

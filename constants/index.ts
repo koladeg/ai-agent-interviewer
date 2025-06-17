@@ -160,7 +160,7 @@ export const assistant: CreateAssistantDTO = {
 
   // Initial greeting when the call starts
   firstMessage:
-      "Hello, I’ll walk you through a few quick questions to prepare your report. " +
+      "Hello this is Ruth, I’ll walk you through a few quick questions to prepare your report. " +
       "Feel free to speak naturally, and I’ll handle the rest. Shall we begin?",
 
   // Audio-to-text settings
@@ -170,15 +170,23 @@ export const assistant: CreateAssistantDTO = {
     language: "en",
   },
 
+  stopSpeakingPlan:{
+    backoffSeconds: 3,
+  },
+
   // Text-to-speech settings
   voice: {
     provider: "11labs",
     voiceId: "cVfw9PD2QL7pPiHl86gf",          // warm, professional female voice
     stability: 0.5,
-    similarityBoost: 0.7,
-    speed: 1.0,
-    style: 0.6,
+    similarityBoost: 0.5,
+    speed: 0.9,
+    style: 0.2,
     useSpeakerBoost: true,
+  },
+
+  startSpeakingPlan: {
+    waitSeconds: 3.0
   },
 
   // LLM configuration
@@ -189,7 +197,7 @@ export const assistant: CreateAssistantDTO = {
       {
         role: "system",
         content: `
-You are ReportGenAssistant, a professional voice assistant guiding Lagos nigeria based users through a concise interview to collect all key details for their report.
+You are ReportGenAssistant, a professional voice assistant guiding Lagos nigeria based users through a concise interview to collect all key details for a report they wish to make.
 
  **Question Flow**  
 Iterate through the array {{questions}}, asking one question at a time.  
@@ -197,6 +205,8 @@ Iterate through the array {{questions}}, asking one question at a time.
 • If a response is very brief or unclear, gently reprompt once:  
   “I’m sorry, could you say a bit more on that?”  
 • Then move on even if they remain brief.
+• Express large numbers as “thousand,” “million,” or “billion” (not digits).
+•	End the session if the user says they are done.
 
 ️**Answer Collection**  
 Collect each response and build a JSON array of objects:  
@@ -210,12 +220,13 @@ Collect each response and build a JSON array of objects:
 • No slang or heavy local expressions—more polite and natural.  
 • Keep each prompt under 15 words for smooth voice flow.  
 • Avoid characters like “/” or “*” that could break TTS.
+• Any summary made should not exceed 4 sentences
 
 4️⃣ **On Completion**  
-When all questions are done:  
+When all questions are done or when asked to end the report:  
 • Say:  
-  “Great, I’ve captured all your inputs. Please hold on while we generate your report.”  
-• Finally, output only the JSON array—no extra narration—so our backend can process it.`.trim()
+  "Great, I’ve captured all your inputs. Please hold on while I generate your report." 
+• Finally, output only the JSON array (no extra narration) so the backend can process it.`.trim()
       }
     ]
   }
@@ -254,6 +265,21 @@ export const feedbackSchema = z.object({
   areasForImprovement: z.array(z.string()),
   finalAssessment: z.string(),
 });
+
+export const reportFeedbackSchema = z.object({
+  title: z.string(),
+  metadata: z.object({
+    report_purpose: z.string(),
+    timeframe: z.string(),
+  }),
+  sections: z.array(
+    z.object({
+      heading: z.string(),
+      content: z.string(),
+    })
+  ),
+});
+
 
 export const interviewCovers = [
   "/adobe.png",

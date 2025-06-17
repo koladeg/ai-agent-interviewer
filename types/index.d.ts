@@ -13,6 +13,20 @@ interface Feedback {
   createdAt: string;
 }
 
+interface ReportFeedback {
+  id: string;
+  interviewId: string;
+  title: string;
+  metadata: Array<{
+    report_purpose: string;
+    timeframe: string;
+  }>;
+  sections: Array<{
+    heading: string;
+    content: string;
+  }>;
+  createdAt: string;
+}
 interface Interview {
   id: string;
   role: string;
@@ -46,6 +60,17 @@ interface CreateFeedbackParams {
   feedbackId?: string;
 }
 
+interface CreateReportFeedbackParams {
+  interviewId: string;
+  userId: string;
+  transcript: { role: string; content: string }[];
+  feedbackId?: string;
+  report_type: string;
+  report_purpose: string;
+  reportFeedbackId: string;
+  timeframe: string;
+}
+
 interface User {
   name: string;
   email: string;
@@ -75,6 +100,10 @@ interface AgentProps {
   userId?: string;
   interviewId?: string;
   feedbackId?: string;
+  reportFeedbackId?: string;
+  report_type?: string;
+  report_purpose?: string;
+  timeframe?: string;
   type: "generate" | "interview";
   questions?: string[];
   profileImage?: string;

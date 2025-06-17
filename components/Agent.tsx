@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { vapi } from '@/lib/vapi.sdk';
 import { assistant, interviewer } from '@/constants';
-import { createFeedback } from '@/lib/actions/general.action';
+import { createFeedback, createReportFeedback } from '@/lib/actions/general.action';
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -25,7 +25,11 @@ const Agent = ({
   userId,
   interviewId,
   feedbackId,
+  reportFeedbackId,
   type,
+  report_purpose,
+  report_type,
+  timeframe,
   questions, profileImage
 }: AgentProps) => {
 
@@ -91,11 +95,21 @@ const Agent = ({
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
       console.log("handleGenerateFeedback");
 
-      const { success, feedbackId: id } = await createFeedback({
+      // const { success, feedbackId: id } = await createFeedback({
+      //   interviewId: interviewId!,
+      //   userId: userId!,
+      //   transcript: messages,
+      //   feedbackId,
+      // });
+
+      const { success, reportFeedbackId: id } = await createReportFeedback({
         interviewId: interviewId!,
         userId: userId!,
         transcript: messages,
-        feedbackId,
+        reportFeedbackId,
+        report_purpose,
+        report_type,
+        timeframe,
       });
 
       if (success && id) {
@@ -113,7 +127,9 @@ const Agent = ({
         handleGenerateFeedback(messages);
       }
     }
-  }, [messages, callStatus, feedbackId, interviewId, router, type, userId]);
+  }, [messages, callStatus, feedbackId, reportFeedbackId, interviewId, router, type, userId, report_purpose,
+    report_type,
+    timeframe]);
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);

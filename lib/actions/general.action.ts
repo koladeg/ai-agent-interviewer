@@ -4,7 +4,7 @@ import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 
 import { db } from "@/firebase/admin";
-import { feedbackSchema } from "@/constants";
+import { feedbackSchema, reportFeedbackSchema } from "@/constants";
 
 export async function createFeedback(params: CreateFeedbackParams) {
   const { interviewId, userId, transcript, feedbackId } = params;
@@ -66,6 +66,68 @@ export async function createFeedback(params: CreateFeedbackParams) {
   }
 }
 
+export async function createReportFeedback(params: CreateReportFeedbackParams) {
+  const { interviewId, userId, transcript, reportFeedbackId, report_purpose, report_type,
+    timeframe } = params;
+
+  try {
+    const formattedTranscript = transcript
+      .map(
+        (sentence: { role: string; content: string }) =>
+          `- ${sentence.role}: ${sentence.content}\n`
+      )
+      .join("");
+
+    const { object } = await generateObject({
+      model: google("gemini-2.0-flash-001", {
+        structuredOutputs: false,
+      }),
+      schema: reportFeedbackSchema,
+      prompt: `
+        You are “ReportGenAI,” an expert report writer. Use the details below to draft a professional report in JSON format matching the provided schema.
+
+        Core Details:
+        • Report Type: ${report_type}
+        • Purpose: ${report_purpose}
+        • Timeframe: ${timeframe}
+        
+        Transcript:
+        ${formattedTranscript}
+
+        Return **only** a single JSON object conforming exactly to the schema.
+        Thank you!
+        `,
+      system:
+        "You are a professional report generator analyzing an interview. Your task is to evaluate the responses and generate a report from it",
+    });
+
+    const reportFeedback = {
+      interviewId: interviewId,
+      userId: userId,
+      title: object.title,
+      report_purpose: object.metadata.report_purpose,
+      timeframe: object.metadata.timeframe,
+      sections: object.sections,
+      createdAt: new Date().toISOString(),
+    };
+
+    let feedbackRef;
+
+    if (reportFeedbackId) {
+      feedbackRef = db.collection("reportFeedback").doc(reportFeedbackId);
+    } else {
+      feedbackRef = db.collection("reportFeedback").doc();
+    }
+
+    await feedbackRef.set(reportFeedback);
+
+    return { success: true, reportFeedbackId: feedbackRef.id };
+  } catch (error) {
+    console.error("Error saving reportFeedback:", error);
+    return { success: false };
+  }
+}
+
 export async function getInterviewById(id: string): Promise<Interview | null> {
   const interview = await db.collection("interviews").doc(id).get();
 
@@ -94,6 +156,24 @@ export async function getFeedbackByInterviewId(
 
   const feedbackDoc = querySnapshot.docs[0];
   return { id: feedbackDoc.id, ...feedbackDoc.data() } as Feedback;
+}
+
+export async function getReportFeedbackByInterviewId(
+  params: GetFeedbackByInterviewIdParams
+): Promise<ReportFeedback | null> {
+  const { interviewId, userId } = params;
+
+  const querySnapshot = await db
+    .collection("reportFeedback")
+    .where("interviewId", "==", interviewId)
+    .where("userId", "==", userId)
+    .limit(1)
+    .get();
+
+  if (querySnapshot.empty) return null;
+
+  const reportFeedbackDoc = querySnapshot.docs[0];
+  return { id: reportFeedbackDoc.id, ...reportFeedbackDoc.data() } as ReportFeedback;
 }
 
 export async function getLatestInterviews(

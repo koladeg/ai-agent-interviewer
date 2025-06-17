@@ -6,25 +6,28 @@ import { Button } from "./ui/button";
 // import DisplayTechIcons from "./DisplayTechIcons";
 
 import { cn, getRandomInterviewCover } from "@/lib/utils";
-import {getFeedbackByInterviewId} from "@/lib/actions/general.action";
-// import { getFeedbackByInterviewId } from "@/lib/actions/general.action";
+import {getFeedbackByInterviewId, getReportFeedbackByInterviewId} from "@/lib/actions/general.action";
 
 const ReportCard = async ({
-                              userId,
-                              interviewId,
-                                 report_type,
-                                 report_purpose,
-                                 // timeframe,
-                                 createdAt,
-                             }: ReportCardProps) => {
-    const feedback =
+    userId,
+    interviewId,
+    report_type,
+    report_purpose,
+    // timeframe,
+    createdAt,
+    }: ReportCardProps) => {
+                                
+    const reportFeedback =
         userId && interviewId
-            ? await getFeedbackByInterviewId({
+            ? await getReportFeedbackByInterviewId({
                 interviewId,
                 userId,
             })
-            : null;
+            : userId;
+            
 
+    console.log("report feedback", reportFeedback)
+    console.log("report feedback id", reportFeedback?.id)        
     const normalizedType = /report/gi.test(report_purpose) ? "Mixed" : report_purpose;
 
     const badgeColor =
@@ -35,7 +38,7 @@ const ReportCard = async ({
         }[normalizedType] || "bg-light-600";
 
     const formattedDate = dayjs(
-        feedback?.createdAt || createdAt || Date.now()
+        reportFeedback?.createdAt || createdAt || Date.now()
     ).format("MMM D, YYYY");
 
     return (
@@ -76,15 +79,15 @@ const ReportCard = async ({
                             <p>{formattedDate}</p>
                         </div>
 
-                        <div className="flex flex-row gap-2 items-center">
+                        {/* <div className="flex flex-row gap-2 items-center">
                             <Image src="/star.svg" width={22} height={22} alt="star" />
-                            <p>{feedback?.totalScore || "---"}/100</p>
-                        </div>
+                            <p>{reportFeedback?.totalScore || "---"}/100</p>
+                        </div> */}
                     </div>
 
                     {/* Feedback or Placeholder Text */}
                     <p className="line-clamp-2 mt-5">
-                        {feedback?.finalAssessment ||
+                        {report_purpose ||
                             "You haven't taken this report yet. Take it now to see if its for you."}
                     </p>
                 </div>
@@ -95,12 +98,12 @@ const ReportCard = async ({
                     <Button className="btn-primary">
                         <Link
                             href={
-                                feedback
+                                reportFeedback
                                     ? `/interview/${interviewId}/feedback`
                                     : `/interview/${interviewId}`
                             }
                         >
-                            {feedback ? "Check Feedback" : "View Interview"}
+                            {reportFeedback ? "Check Feedback" : "View Interview"}
                         </Link>
                     </Button>
                 </div>
