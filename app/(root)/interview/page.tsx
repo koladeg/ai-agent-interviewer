@@ -11,7 +11,7 @@ export default async function page() {
 
   return (
     <>
-      <h3> Interview generation </h3>
+      <h3> Report generation </h3>
       <Agent 
         userName={user?.name!}
         userId={user?.id}
